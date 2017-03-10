@@ -83,7 +83,7 @@ const initialState = {
   colors: null,
 };
 
-export function colors(state = initialState, action) {
+export default function reducer(state = initialState, action) {
   switch (action.type) {
     case colorStart.type:
       return { ...state, isFetchingColor: true };

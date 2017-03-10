@@ -10,7 +10,7 @@ import thunkMiddleware from 'redux-thunk';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 
-import reducers from './state/reducers';
+import reducers from './state';
 import ConnectedApp from './pages/app';
 
 import './index.css';

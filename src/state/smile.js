@@ -94,7 +94,7 @@ const initialState = {
   info: null,
 };
 
-export function smile(state = initialState, action) {
+export default function reducer(state = initialState, action) {
   switch (action.type) {
     case infoStart.type:
       return { ...state, isFetchingInfo: true };
