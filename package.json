@@ -1,0 +1,45 @@
+{
+  "name": "mesasez",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "start": "PORT=3002 react-scripts start",
+    "lint": "eslint . --ext .js",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
+  },
+  "author": "Luis Montes <monteslu@gmail.com> (iceddev.com)",
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "devDependencies": {
+    "enzyme": "^2.7.0",
+    "eslint": "^3.12.2",
+    "eslint-config-airbnb": "^13.0.0",
+    "eslint-plugin-import": "^2.2.0",
+    "eslint-plugin-jsx-a11y": "^2.2.3",
+    "eslint-plugin-react": "^6.8.0",
+    "fetch-mock": "^5.8.1",
+    "react-addons-test-utils": "^15.4.2",
+    "react-scripts": "0.8.4",
+    "redux-mock-store": "^1.2.1"
+  },
+  "dependencies": {
+    "es6-promise": "^4.1.0",
+    "faker": "^3.1.0",
+    "isomorphic-fetch": "^2.2.1",
+    "lodash": "^4.17.4",
+    "material-ui": "^0.16.6",
+    "moment": "^2.17.1",
+    "react": "^15.4.1",
+    "react-color": "^2.11.3",
+    "react-dom": "^15.4.2",
+    "react-redux": "^5.0.1",
+    "react-router": "^3.0.0",
+    "react-tap-event-plugin": "^2.0.1",
+    "redux": "^3.6.0",
+    "redux-thunk": "^2.1.0"
+  }
+}
