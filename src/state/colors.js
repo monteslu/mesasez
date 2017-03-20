@@ -1,81 +1,29 @@
-import makeActionCreator from '../lib/make-action-creator';
-
+import { resetReducer, promiseHandler } from 'cooldux';
 import config from '../config';
-import _ from 'lodash';
 
-const colorStart = makeActionCreator('colors-COLOR_START');
-const colorEnd = makeActionCreator('colors-COLOR_END');
-const colorError = makeActionCreator('colors-COLOR_ERROR');
+const { colorStart, colorEnd, colorError, colorHandler } = promiseHandler('color');
+const { updateColorStart, updateColorEnd, updateColorError, updateColorHandler } = promiseHandler('updateColor');
 
-const updateColorStart = makeActionCreator('colors-UPDATE_COLOR_START');
-const updateColorEnd = makeActionCreator('colors-UPDATE_COLOR_END');
-const updateColorError = makeActionCreator('colors-UPDATE_COLOR_ERROR');
-
-
-export function updateColor(index, color) {
+export function updateColor(id, color) {
   return function dispatcher(dispatch, getState) {
-    dispatch(updateColorStart());
-
-    const newColor = {
-      id: index,
-      color: color
-    };
-
     const requestOptions = {
-      body: JSON.stringify(newColor),
+      body: JSON.stringify({id, color}),
       method: 'POST',
       headers: {
           'Content-Type': 'application/json',
       },
     };
-
-    return window.fetch(`${config.API_URL}/colors`, requestOptions)
-      .then((res) => {
-        if (res.status === 200) {
-          return res.json();
-        }
-        throw new Error(`Update color Failed status ${res.status}`);
-      })
-      .then((resp) => {
-        console.log('colors post resp', resp);
-        dispatch(updateColorEnd(resp));
-        return resp;
-      })
-      .catch((err) => {
-        dispatch(updateColorError());
-        throw err;
-      });
+    const fetchPromise = window.fetch(`${config.API_URL}/colors`, requestOptions);
+    return updateColorHandler(fetchPromise.then(res => res.json()), dispatch);
   };
 }
-
 
 export function fetchColors() {
   return function dispatcher(dispatch) {
-    dispatch(colorStart());
-
-    const requestOptions = {
-      method: 'GET',
-    };
-
-    return window.fetch(`${config.API_URL}/colors`, requestOptions)
-      .then((res) => {
-        if (res.status === 200) {
-          return res.json();
-        }
-        throw new Error(`Failed fetch ${res.status}`);
-      })
-      .then((json) => {
-        console.log('colors get resp', json);
-        dispatch(colorEnd(json));
-        return json;
-      })
-      .catch((err) => {
-        dispatch(colorError());
-        throw err;
-      });
+    const fetchPromise = window.fetch(`${config.API_URL}/colors`);
+    return colorHandler(fetchPromise.then(res => res.json()), dispatch);
   };
 }
-
 
 const initialState = {
   isFetchingColor: false,
@@ -83,7 +31,7 @@ const initialState = {
   colors: null,
 };
 
-export default function reducer(state = initialState, action) {
+export default resetReducer(initialState, function(state = initialState, action) {
   switch (action.type) {
     case colorStart.type:
       return { ...state, isFetchingColor: true };
@@ -100,4 +48,4 @@ export default function reducer(state = initialState, action) {
     default:
       return state;
   }
-}
+});

@@ -1,23 +1,15 @@
-import makeActionCreator from '../lib/make-action-creator';
-
-import config from '../config';
 import _ from 'lodash';
+import { makeActionCreator, promiseHandler } from 'cooldux';
+import config from '../config';
 
-const infoStart = makeActionCreator('smile-INFO_START');
-const infoEnd = makeActionCreator('smile-INFO_END');
-const infoError = makeActionCreator('smile-INFO_ERROR');
+const { infoStart, infoEnd, infoError, infoHandler } = promiseHandler('info');
+const { updateInfoStart, updateInfoEnd, updateInfoError, updateInfoHandler } = promiseHandler('updateInfo');
 
-const updateInfoStart = makeActionCreator('smile-UPDATE_INFO_START');
-const updateInfoEnd = makeActionCreator('smile-UPDATE_INFO_END');
-const updateInfoError = makeActionCreator('smile-UPDATE_INFO_ERROR');
-
-const updateLocalEnd = makeActionCreator('smile-UPDATE_LOCAL_END');
+export const updateLocal = makeActionCreator('smile-UPDATE_LOCAL');
 
 
 export function updateInfo() {
   return function dispatcher(dispatch, getState) {
-    dispatch(updateInfoStart());
-
     const { smile } = getState();
 
     const picBytes = smile.info.map(function(line){
@@ -32,59 +24,15 @@ export function updateInfo() {
       },
     };
 
-    return window.fetch(`${config.API_URL}/smile`, requestOptions)
-      .then((res) => {
-        if (res.status === 200) {
-          return 'ok';
-        }
-        throw new Error(`Update info Failed status ${res.status}`);
-      })
-      .then((resp) => {
-        dispatch(updateInfoEnd(resp));
-        return resp;
-      })
-      .catch((err) => {
-        dispatch(updateInfoError());
-        throw err;
-      });
-  };
-}
-
-export function localUpdate(x, y) {
-  return function dispatcher(dispatch, getState) {
-    const { smile } = getState();
-
-    console.log('local update', smile, x, y);
-
-    smile.info[x][y] = smile.info[x][y] ? 0 : 1;
-    dispatch(updateLocalEnd(smile.info));
-
+    const fetchPromise = window.fetch(`${config.API_URL}/smile`, requestOptions);
+    return updateInfoHandler(fetchPromise, dispatch);
   };
 }
 
 export function fetchInfo() {
   return function dispatcher(dispatch) {
-    dispatch(infoStart());
-
-    const requestOptions = {
-      method: 'GET',
-    };
-
-    return window.fetch(`${config.API_URL}/smile`, requestOptions)
-      .then((res) => {
-        if (res.status === 200) {
-          return res.json();
-        }
-        throw new Error(`Failed fetch ${res.status}`);
-      })
-      .then((json) => {
-        dispatch(infoEnd(json));
-        return json;
-      })
-      .catch((err) => {
-        dispatch(infoError());
-        throw err;
-      });
+      const fetchPromise = window.fetch(`${config.API_URL}/smile`);
+      return infoHandler(fetchPromise.then(res => res.json()), dispatch);
   };
 }
 
@@ -94,12 +42,12 @@ const initialState = {
   info: null,
 };
 
-export default function reducer(state = initialState, action) {
-  switch (action.type) {
+export default function reducer(state = initialState, { payload, type }) {
+  switch (type) {
     case infoStart.type:
       return { ...state, isFetchingInfo: true };
     case infoEnd.type:
-      var newInfo = action.payload.map(function(line){
+      var newInfo = payload.map(function(line){
         return _.padStart(Number(line).toString(2),8, '0').split('').map(function(a){
            return parseInt(a,10);
          });
@@ -107,8 +55,9 @@ export default function reducer(state = initialState, action) {
       return { ...state, isFetchingInfo: false, info: newInfo };
     case infoError.type:
       return { ...state, isFetchingInfo: false };
-    case updateLocalEnd.type:
-      return { ...state, isUpdatingInfo: false, info: action.payload };
+    case updateLocal.type:
+      state.info[payload.x][payload.y] = state.info[payload.x][payload.y] ? 0 : 1;
+      return { ...state };
     case updateInfoStart.type:
       return { ...state, isUpdatingInfo: true };
     case updateInfoEnd.type:

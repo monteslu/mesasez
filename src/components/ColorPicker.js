@@ -42,7 +42,11 @@ class ColorPicker extends React.Component {
         cursor: 'pointer',
       },
       popover: {
-        position: 'absolute',
+        // top: '50%',
+        // left: '50%',
+        // marginLeft: 'auto',
+        // marginRight: 'auto',
+        position: 'relative',
         zIndex: '2',
       },
       cover: {
@@ -58,7 +62,7 @@ class ColorPicker extends React.Component {
 
 
     return (
-      <div>
+      <div style={this.props.style}>
         <div style={ styles.swatch } onClick={ this.handleClick }>
           <div style={ styles.color } />
         </div>

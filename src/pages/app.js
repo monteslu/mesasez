@@ -2,7 +2,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { fetchInfo, updateInfo, localUpdate } from '../state/smile';
+import { fetchInfo, updateInfo, updateLocal } from '../state/smile';
 import { fetchColors, updateColor } from '../state/colors';
 import Card from 'material-ui/Card';
 import CircularProgress from 'material-ui/CircularProgress';
@@ -44,6 +44,10 @@ const bs = {
   cards: {
     padding: '5px',
     marginTop: '10px'
+  },
+  lights: {
+    margin: '15px',
+    float: 'right'
   }
 
 };
@@ -66,8 +70,8 @@ export class App extends Component {
     this.props.updateInfo();
   }
   handleGridClick(x, y) {
-    console.log('grid click', x,y);
-    this.props.localUpdate(x, y);
+    console.log('grid click', x, y);
+    this.props.updateLocal({x, y});
   }
   handleUpdateColor(idx, color){
     console.log('color changed event ', idx, color );
@@ -84,10 +88,14 @@ export class App extends Component {
 
 
     if(colors.colors && !colors.isFetchingColor && !colors.isUpdatingColor) {
-      colorDiv = (<div>Change the Lights:
-        <ColorPicker color={colors.colors[0]} colorChanged={(newColor) => this.handleUpdateColor(0, newColor)}/>
-        <ColorPicker color={colors.colors[1]} colorChanged={(newColor) => this.handleUpdateColor(1, newColor)}/>
-        <ColorPicker color={colors.colors[2]} colorChanged={(newColor) => this.handleUpdateColor(2, newColor)}/>
+      colorDiv = (<div>
+
+        <div>Change the Lights:</div>
+        <div style={{display: 'flex', justifyContent: 'center'}}>
+          <ColorPicker style={bs.lights} color={colors.colors[0]} colorChanged={(newColor) => this.handleUpdateColor(0, newColor)}/>
+          <ColorPicker style={bs.lights} color={colors.colors[1]} colorChanged={(newColor) => this.handleUpdateColor(1, newColor)}/>
+          <ColorPicker style={bs.lights} color={colors.colors[2]} colorChanged={(newColor) => this.handleUpdateColor(2, newColor)}/>
+        </div>
       </div>);
     }
 
@@ -97,7 +105,7 @@ export class App extends Component {
 
     if(smile.info && !smile.isUpdatingInfo) {
       console.log('render table', smile);
-      info = (<div> Draw on the shirt:
+      info = (<div> Draw on the shirt:<br/>
         <div>
         <table style={bs.table}>
           <tbody>
@@ -220,7 +228,7 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   const actionCreators = {
-    fetchInfo, updateInfo, localUpdate, fetchColors, updateColor
+    fetchInfo, updateInfo, updateLocal, fetchColors, updateColor
   };
 
   return bindActionCreators(actionCreators, dispatch);

@@ -5,7 +5,7 @@ const env = {
     API_URL: 'https://monteslu.iceddev.com',
   },
   development: {
-    API_URL: 'https://local.iceddev.com',
+    API_URL: 'https://monteslu.iceddev.com',
   },
   production: {
     API_URL: 'https://monteslu.iceddev.com',
